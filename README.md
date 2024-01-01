@@ -1,5 +1,7 @@
-# Unite PiFinder & Stellarmate
-[PiFinder](https://www.pifinder.io/) is one of the coolest astronomy projects out there besides [Stellarmate](https://stellarmate.com). 
+# Work in progress - do not use for now !!!
+##############################################
+
+# Unite PiFinder & Stellarmate[PiFinder](https://www.pifinder.io/) is one of the coolest astronomy projects out there besides [Stellarmate](https://stellarmate.com). 
 In this project I describe, how to add the PiFinder software to an existing Stellarmate.
 
 Main sources for PiFinder are:
@@ -12,20 +14,27 @@ Main sources for PiFinder are:
 
 ## Preface
 
-As of writing this (December 2023), I am worknig with
-- Raspberry PI 4 (8GB) 
-- Stable branch of Stellarmate 1.8.0 (64 bit)
+As of writing this (December 2023), this project is done with
+- Raspberry PI 4 (4GB) - tested with pure SD card only and PiFinder hat, but also with additional setup (see here: [YAACS](https://github.com/apos/case_system_stellarmate_astroberry) )
+- Fresh install (! no upgrade path !) of stable branch of Stellarmate 1.8.0 (64 bit) which is based on debian bookworm
+- PiFinder Software Version 1.7.4 (64 bit)
 
-which is based on debian buster. Please be aware, this procedure will NOT WORK WITH a 32bit version! If you updated from an early version of Stellarmate it it very likely, that you are running a 32 bit version (the architecture will not upgrade, just the software). 
+Please be aware, this procedure will NOT WORK WITH a 32bit version! 
 
-STOP: at the end in the troubleshooting section I write, how to get this information. Please check, before you procede with
+Hint: If you updated Stellarmate from an early version (earlier than 1.70), it is very likely, that you are running a 32 bit version and an older system (buster). The architecture will not upgrade, just the software. You than have to get an actual version. You can simply copy over your KStars directory. 
+
+STOP: at the end in the troubleshooting section I write, how to get this information. Please check, before you procede with to check your environment:
 
      sudo inxi -Fxz
 
-Stellarmate Beta is actually on debian bullseye, but I do not like to go on the beta (nightly) stellarmate. I test with an Sandisk Extreme 64GB SD card an then copy that back to a 1TB NVME (see at github at my [YAACS](https://github.com/apos/case_system_stellarmate_astroberry) for specifications).
+NOW YOU CAN READ ON :-)
 
-The only problem I had, was fixing the connection to the EKOS live server. The fix is to reconnect to the acccount. I explain this in the troubleshooting section at the end. 
+Stellarmate 1.8.0 is actually on debian bookworm (as of Dec 2023). I test with a fast Sandisk Extreme 64GB SD card an then copy that back to a 1TB NVME-
 
+![image](https://github.com/apos/pifinder_tweaks/assets/456034/f9679771-bf34-4d27-b1da-b191dbb25dae)
+![image](https://github.com/apos/pifinder_tweaks/assets/456034/d01bca60-bc64-4069-a82e-dc9eeb59a2a0)
+
+There is also a [thread for this project on the Discord channel](https://discord.com/channels/1087556380724052059/1179949372847423489) of the PiFinder project. You''ll find the discord invitation on the [PiFinder homepage](https://www.pifinder.io).
 
 This process might be something for the experienced user, but it is straight forward and probably you will learn a lot on how the underlying debian linux is working. 
 
@@ -70,36 +79,24 @@ ssh into your actual stellarmate
 
 I also recommend to install git and some tools, you will need it anyways and this saves time later on 
 
-   sudo apt install git lshw inxi
+   sudo apt install git inxi
 
 If you are used to work with vim, install also vim as an alternative editor
-   sudo apt install git lshw inxi vim vim-scripts
+   sudo apt install git inxi vim vim-scripts
 
 ## Update your Stellarmate to the latest stable version
 
-Update the stellarmates debian to the newest version
-    sudo apt update && sudo apt-dist upgrade
+Update your Stellarmate installation. Do this within your Stellarmate App.
 
-Update your Stellarmate installation. Do this within your Stellarmate App or Web-VNC into stellarmate and call the StellarMate Tools 
+You can also use the Web-VNC and call the "StellarMate Tools" app from the desktop:
 
    http://stellarmate.local:6080  (default password is "smate")
 
-Open the StelarMate Tools app an Update to the lates Stellarmat version. 
-
+Then open the StelarMate Tools app an ipdate to the lates Stellarmat version. 
 
 Then reboot
 
    sudo reboot
-
-## Upgrade debian - Caution - create and use a copy of stellarmate 
-
-You should first copy your stellarmate to a second sd card and then test it thorougly. Then you can copy it back onto your actual installation. Or, if this is your first stellarmate, it is no problem, because you can simply install it from scratch. Nevertheless, I would prefer to work with a copy. And, do not tinker with stellarmate, if you are new to it. Concentrate on the job here, to install PiFinder. You should not do two things at a time. 
-
-Hint: You should have at least approximataly 3-5 GB space left on the card, because we update stellarmate. So best use a 32 GB card at least. It is always wise, to not use all the space on a sd card, this can reduce the lifetime of the card drastically - 30-40% space left is best. 
-
-Therefore make a copy of your stellarmate onto a spare SDcard with "SD Card Copier" which is part of any raspian or stellarmate. Go to the menu and you'll find it under the submenu "accessories". Put a new SD-card into an USB-SD-card reader and copy things over (do not mix source and target - think twice!). This can take a while like 10-20 minutes depending of the speed of your SD-card.
-
-
 
 ### Boot into the copy of your Stellarmate
 
@@ -107,71 +104,6 @@ Boot your copy of stellarmate from the newly created SD card (remove the USB car
 
     ssh -p 5624 stellarmate@stellarmate.local # default password is smate or stellar@mate
 
-
-First of alle you should update all packages and reboot 
-
-    sudo apt update
-    sudo apt dist-upgrade
-    sudo reboot
-
-
-### Upgrade debian from buster to bullseye
-
-Because stellarmate runs on buster (at least my version 1.8), we have to upgrade stellarmate to "bullseye", which is possible due to the super cow power of debian :-) This process will take a lot of time, because this downloads 2-2,5 GB of new archives that have to be installed. So you also need to have that space. You also need to be at place to interact with some infos, warnings and so on. 
-
-
-##################
-The following process takes a bunch of time and the update process is interacive! 
-##################
-
-Just alter the apt sources in /etc/apt
-
-    sudo nano /etc/apt/sources.list.d/smos.list
-    > deb https://ppa.stellarmate.com/repos/apt/stable bullseye main
-
-    sudo nano /etc/apt/sources.list.d/raspi.list
-    > deb http://archive.raspberrypi.org/debian/ bullseye main
-
-    sudo nano /etc/apt/sources.list
-    > deb http://raspbian.raspberrypi.org/raspbian/ bullseye main contrib non-free rpi 
-
-Then update. 
-
-You will be prompted with a handful of warnings and informations. If you are unsure, what to do, just take the preselected values:
-
-- Selections can be eather "yes" or "no" or simply "OK" followed by pressing the Enter key. Select between selections with the "Tab" key and press "Enter". 
-- Or just a "q" to leave for informations. 
-- If you ask about altering the package information always use "keep the local version currently installed" (press Tab to switch to OK, then press Enter)
-
-    sudo apt update
-
-Check the output message of this command, which should state "bullseye". There should not be any "buster" at all:
-
-    Hit:1 http://raspbian.raspberrypi.org/raspbian bullseye InRelease
-    Hit:2 http://archive.raspberrypi.org/debian bullseye InRelease
-    Get:3 https://ppa.stellarmate.com/repos/apt/stable bullseye InRelease [2,186 B]
-    Fetched 2,186 B in 1s (1,966 B/s)
-    Reading package lists... Done
-    Building dependency tree... Done
-    Reading state information... Done
-
-
-Then upgrade the system from debian buster to debian bullseye
-
-    sudo apt dist-upgrade
-
-As of my experience, it might be useful, to check again und upgrade again. It might be, that you get the message "The following packages have been kept back:" followed by a list of packages. This is no problem.
-
-    sudo apt update && sudo apt dist-upgrade
-
-
-After that, we remove the package cache (do NOT remove packages with "autoremove" as suggested), which deletes all downloaded packages, which saves a lot of space. This speeds up the copy process later on. 
-
-    sudo apt clean
-
-When everything finished, reboot
-
-    sudo reboot
 
 ### Test, if your Stellarmate still works - check the version
 
@@ -183,17 +115,9 @@ Also you should be able to VNC into your stellarmate with your browser. Do this
 
    http://stellarmate.local:6080  (default password is "smate")
 
-You might get an error, that the stellarmate server ist not accessable, after Kstars is running. Therefore start the Stellarmate Update, 
-
-
-
 Great job! You are almost done. 
-If you experience any problems, 
-
 
 ## Create pifinder user
-
-
 
 We have now to create a pifinder user and home directory and add it to the sudo group. 
 We will act then as pifinder to get the same environment, as PiFinder expects.
@@ -208,15 +132,25 @@ We will act then as pifinder to get the same environment, as PiFinder expects.
 
 ## Become pifinder user
 
-Now we can change the user This step important!
+### STOP: This step ist important! Change to the pifinder user
 
     su - pifinder
 
-We mainly do, what is described in the [docs]https://pifinder.readthedocs.io/en/release/software.html#build-from-scratch), but with a few differences. 
-
+We now mainly do, what is described in the [docs]https://pifinder.readthedocs.io/en/release/software.html#build-from-scratch), but with a few differences within the pifinder setup.  
 
 ### Enable SPI and I2C
 Like mentioned there, check that SPI an I2C are enabled. When you altered the settings, you have to reboot. 
+
+     sudo raspi-config
+
+- Update raspi-config tool
+
+![image](https://github.com/apos/pifinder_tweaks/assets/456034/4134eb62-f3e5-43c3-9b6e-98ee6842e514)
+
+- Enable I2C and SPI
+
+![image](https://github.com/apos/pifinder_tweaks/assets/456034/08740526-f5ed-4670-862a-97f3de3c235b)
+
 
 ### Download and alter the pifinder setup scrip
 Next we download the original PiFinder script like mentioned in the docs, but we DO NOT RUN IT, just download the script (no `| bash` at the end!)
@@ -230,6 +164,8 @@ We have to alter the script, because we do not want to alter or overwrite the se
 - Wlan (hostapp and other stuff)
 - GPS
 - Samba
+
+We habe to alter the way starting the [pifinder service](https://www.tderflinger.com/en/using-systemd-to-start-a-python-application-with-virtualenv) via 
 
     nano pifinder_setup.sh
 
@@ -324,7 +260,7 @@ Get your architecture. If the result is 32, you have a 32bit, which will NOT wor
 
     getconf LONG_BIT
 
-You can also install some tools to get more informateon
+You can also install some tools to get much more informations (only, if you like - this will add some dependencies): 
 
     sudo apt install lshw inxi
     sudo inxi -Fxz
@@ -381,7 +317,11 @@ You should also Web-VNC into Stellarmate for some further troubleshooging.
 
 
 ### Fix it - WIP
-There are some things you should try to get this up and running again. 
+There are some things you should try to get this up and running again.
+
+Open EKOS inside of KStars and tip onto the cloud symbol (see above inside of the 
+
+Easeast solution 
 
 1. If the status shows "Offline", try to reconnect. 
 
