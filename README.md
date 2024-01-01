@@ -1,7 +1,8 @@
 # Work in progress - do not use for now !!!
 ##############################################
 
-# Unite PiFinder & Stellarmate[PiFinder](https://www.pifinder.io/) is one of the coolest astronomy projects out there besides [Stellarmate](https://stellarmate.com). 
+# Unite PiFinder & Stellarmate
+[PiFinder](https://www.pifinder.io/) is one of the coolest astronomy projects out there besides [Stellarmate](https://stellarmate.com). 
 In this project I describe, how to add the PiFinder software to an existing Stellarmate.
 
 Main sources for PiFinder are:
